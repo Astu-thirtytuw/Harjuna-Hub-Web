@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Anggota;
 use App\Models\Divisi;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AnggotaExport;
 
 class AnggotaController extends Controller
 {
-    // Fungsi bantuan untuk menentukan prefix rute berdasarkan role
     private function getRoutePrefix()
     {
         return auth()->user()->hasRole('ketua') ? 'dashboard.ketua.anggota.' : 'dashboard.sekretaris.anggota.';
@@ -37,11 +41,17 @@ class AnggotaController extends Controller
             'jabatan' => 'nullable|string|max:50',
             'status' => 'required|in:aktif,nonaktif,alumni',
             'tanggal_gabung' => 'required|date',
+            'foto' => 'nullable|image|max:2048',
         ]);
 
-        Anggota::create($request->all());
+        $data = $request->all();
 
-        // Gunakan getRoutePrefix() agar redirect-nya tepat sasaran
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('anggota', 'public');
+        }
+
+        Anggota::create($data);
+
         return redirect()->route($this->getRoutePrefix() . 'index')->with('success', 'Data anggota berhasil ditambahkan!');
     }
 
@@ -62,19 +72,68 @@ class AnggotaController extends Controller
             'jabatan' => 'nullable|string|max:50',
             'status' => 'required|in:aktif,nonaktif,alumni',
             'tanggal_gabung' => 'required|date',
+            'foto' => 'nullable|image|max:2048',
         ]);
 
-        $anggota->update($request->all());
+        $data = $request->all();
 
-        // Gunakan getRoutePrefix()
+        if ($request->hasFile('foto')) {
+            if ($anggota->foto) {
+                Storage::disk('public')->delete($anggota->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('anggota', 'public');
+        }
+
+        $anggota->update($data);
+
         return redirect()->route($this->getRoutePrefix() . 'index')->with('success', 'Data anggota berhasil diperbarui!');
     }
 
     public function destroy(Anggota $anggota)
     {
-        $anggota->delete();
-        
-        // Gunakan getRoutePrefix()
+        if ($anggota->foto) {
+            Storage::disk('public')->delete($anggota->foto);
+        }
+        Anggota::destroy($anggota->id);
         return redirect()->route($this->getRoutePrefix() . 'index')->with('success', 'Data anggota berhasil dihapus!');
+    }
+
+    public function buatAkun(Anggota $anggota)
+    {
+        if ($anggota->user_id) {
+            return redirect()->back()->with('error', 'Anggota ini sudah memiliki akun login.');
+        }
+
+        $roleAnggota = \App\Models\Role::where('slug', 'anggota')->first();
+        
+        $user = User::create([
+            'nama' => $anggota->nama,
+            'email' => strtolower(str_replace(' ', '', $anggota->nama)) . '@harjuna.id',
+            'password' => Hash::make('password123'),
+            'role_id' => $roleAnggota->id,
+            'is_aktif' => 1,
+        ]);
+
+        $anggota->update(['user_id' => $user->id]);
+
+        return redirect()->back()->with('success', 'Akun berhasil dibuat! Email: ' . $user->email . ' | Password: password123');
+    }
+
+    public function resetPassword(Anggota $anggota)
+    {
+        if (!$anggota->user_id) {
+            return redirect()->back()->with('error', 'Anggota ini belum memiliki akun.');
+        }
+
+        $user = User::find($anggota->user_id);
+        $user->update([
+            'password' => Hash::make('password123')
+        ]);
+
+        return redirect()->back()->with('success', 'Password berhasil direset menjadi: password123');
+    }
+            public function ekspor()
+    {
+        return Excel::download(new AnggotaExport, 'Data_Anggota_RW06_' . date('Y-m-d') . '.xlsx');
     }
 }

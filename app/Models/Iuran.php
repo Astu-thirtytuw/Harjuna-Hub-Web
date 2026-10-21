@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Iuran extends Model
 {
-    protected $table = 'iuran';
+    protected $table = 'kas';
     protected $fillable = [
         'anggota_id', 'tahun', 'bulan', 'jumlah',
         'status', 'tanggal_bayar', 'diterima_oleh', 'keterangan',

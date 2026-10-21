@@ -7,38 +7,46 @@
 
         <title>{{ config('app.name', 'Harjuna-Hub') }}</title>
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased bg-harjuna-cream relative">
-        
-        <!-- Pattern Batik (Pakai SVG transparan sederhana) -->
-        <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(circle, #1B4332 10%, transparent 11%), radial-gradient(circle, #1B4332 10%, transparent 11%); background-size: 40px 40px; background-position: 0 0, 20px 20px;"></div>
-
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 relative z-10">
-            <div>
-                <a href="/" class="flex flex-col items-center">
-                    <!-- Ganti dengan logo Sinomanku nanti -->
-                    <div class="w-20 h-20 bg-harjuna-dark rounded-full flex items-center justify-center mb-4 shadow-lg border-4 border-harjuna-gold">
-                        <span class="text-harjuna-gold font-serif-jawa text-3xl font-bold">H</span>
-                    </div>
-                    <h1 class="text-3xl font-serif-jawa font-bold text-harjuna-dark">Harjuna-Hub</h1>
-                    <p class="text-sm text-harjuna-wood mt-1">Karang Taruna RW 06</p>
-                </a>
-            </div>
-
-            <div class="w-full sm:max-w-md mt-8 px-8 py-10 bg-white shadow-2xl overflow-hidden sm:rounded-3xl border border-harjuna-wood/20">
-                {{ $slot }}
-            </div>
+    <body class="font-sans text-gray-900 antialiased">
+        <div class="min-h-screen flex">
             
-            <div class="mt-8 text-sm text-harjuna-wood/70">
-                &copy; {{ date('Y') }} Karang Taruna RW 06.
+            <!-- Kiri: Area Gambar/Ornamen -->
+            <div class="hidden lg:flex w-1/2 bg-harjuna-dark relative items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 opacity-10" style="background-image: url('https://www.transparenttextures.com/patterns/batik.png');"></div>
+                <div class="relative z-10 text-center px-12">
+                    <div class="w-24 h-24 bg-harjuna-gold rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl border-4 border-white/20">
+                        <span class="text-4xl font-serif-jawa font-bold text-harjuna-dark">H</span>
+                    </div>
+                    <h1 class="text-4xl font-serif-jawa font-bold text-harjuna-gold tracking-widest mb-4">HARJUNA-HUB</h1>
+                    <p class="text-gray-300 text-lg">Sistem Informasi Manajemen<br>Karang Taruna RW 06</p>
+                    <p class="mt-8 text-sm text-harjuna-gold/70 italic">"Sesarengan Mbangun Desa"</p>
+                </div>
             </div>
+
+            <!-- Kanan: Form Login -->
+            <div class="w-full lg:w-1/2 flex items-center justify-center bg-harjuna-cream p-6 sm:p-12">
+                <div class="w-full max-w-md">
+                    <!-- Logo untuk Mobile -->
+                    <div class="lg:hidden text-center mb-8">
+                        <h1 class="text-3xl font-serif-jawa font-bold text-harjuna-dark tracking-widest">HARJUNA-HUB</h1>
+                    </div>
+
+                    <div class="bg-white px-8 py-10 shadow-2xl sm:rounded-3xl border border-harjuna-wood/10">
+                        {{ $slot }}
+                    </div>
+                    
+                    <div class="text-center mt-8 text-sm text-gray-500">
+                        &copy; {{ date('Y') }} Karang Taruna RW 06.
+                    </div>
+                </div>
+            </div>
+
         </div>
     </body>
 </html>

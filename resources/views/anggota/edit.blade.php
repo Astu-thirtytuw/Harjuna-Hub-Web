@@ -13,8 +13,8 @@
             @endphp
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl p-6 border border-harjuna-wood/10">
-                <form action="{{ route($prefixRoute . 'update', ['anggota' => $anggota->id]) }}" method="POST">
-                    @csrf
+                <form action="{{ route($prefixRoute . 'update', $anggota->id) }}" method="POST" enctype="multipart/form-data">
+                      @csrf
                     @method('PUT')
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -44,6 +44,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Divisi</label>
                             <select name="divisi_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                <option value="" disabled>-- Pilih Divisi --</option>
                                 @foreach($divisi as $d)
                                     <option value="{{ $d->id }}" {{ $anggota->divisi_id == $d->id ? 'selected' : '' }}>{{ $d->nama }}</option>
                                 @endforeach
@@ -51,8 +52,8 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Jabatan</label>
-                            <input type="text" name="jabatan" value="{{ $anggota->jabatan }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <label class="block text-sm font-medium text-gray-700">Jabatan (Opsional)</label>
+                            <input type="text" name="jabatan" value="{{ $anggota->jabatan }}" placeholder="Contoh: Ketua / Anggota" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-harjuna-gold focus:ring-harjuna-gold">
                         </div>
 
                         <div>
@@ -68,6 +69,14 @@
                             <label class="block text-sm font-medium text-gray-700">Tanggal Gabung</label>
                             <input type="date" name="tanggal_gabung" value="{{ $anggota->tanggal_gabung ? $anggota->tanggal_gabung->format('Y-m-d') : date('Y-m-d') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                         </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700">Foto Anggota (Opsional)</label>
+                        @if(isset($anggota) && $anggota->foto)
+                            <img src="{{ asset('storage/' . $anggota->foto) }}" class="w-20 h-20 object-cover rounded-lg mb-2 border border-harjuna-wood/20">
+                        @endif
+                        <input type="file" name="foto" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-harjuna-cream file:text-harjuna-dark hover:file:bg-harjuna-gold">
                     </div>
 
                     <div class="mt-6 flex justify-end">

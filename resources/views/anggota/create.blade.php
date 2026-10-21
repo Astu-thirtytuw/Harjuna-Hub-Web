@@ -13,8 +13,19 @@
             @endphp
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl p-6 border border-harjuna-wood/10">
-                <form action="{{ route($prefixRoute . 'store') }}" method="POST">
-                    @csrf
+                
+                @if ($errors->any())
+                    <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                        <ul class="list-disc pl-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route($prefixRoute . 'store') }}" method="POST" enctype="multipart/form-data">
+                       @csrf
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -43,6 +54,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Divisi</label>
                             <select name="divisi_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                <option value="" disabled selected>-- Pilih Divisi --</option>
                                 @foreach($divisi as $d)
                                     <option value="{{ $d->id }}">{{ $d->nama }}</option>
                                 @endforeach
@@ -51,7 +63,7 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Jabatan (Opsional)</label>
-                            <input type="text" name="jabatan" placeholder="Contoh: Anggota / Koordinator" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <input type="text" name="jabatan" placeholder="Contoh: Ketua / Anggota" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-harjuna-gold focus:ring-harjuna-gold">
                         </div>
 
                         <div>
@@ -67,6 +79,14 @@
                             <label class="block text-sm font-medium text-gray-700">Tanggal Gabung</label>
                             <input type="date" name="tanggal_gabung" value="{{ date('Y-m-d') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                         </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700">Foto Anggota (Opsional)</label>
+                        @if(isset($anggota) && $anggota->foto)
+                            <img src="{{ asset('storage/' . $anggota->foto) }}" class="w-20 h-20 object-cover rounded-lg mb-2 border border-harjuna-wood/20">
+                        @endif
+                        <input type="file" name="foto" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-harjuna-cream file:text-harjuna-dark hover:file:bg-harjuna-gold">
                     </div>
 
                     <div class="mt-6 flex justify-end">
